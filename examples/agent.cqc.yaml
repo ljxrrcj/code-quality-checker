@@ -1,0 +1,18 @@
+# .cqc.yaml - AI Agent 项目配置
+#
+# 适用于 KaiHong 适配 Agent 项目:
+# - wifi_adaptation_agent
+# - modem_adaptation_agent
+# - sensor_adaptation_agent
+
+include:
+  - tool/
+  - unittest/
+  - scripts/
+
+exclude:
+  - drivers_lib/
+  - configs/
+  - outputs/
+  - templates/
+

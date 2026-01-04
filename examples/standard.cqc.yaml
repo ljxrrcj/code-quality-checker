@@ -1,0 +1,12 @@
+# .cqc.yaml - 标准 Python 项目配置
+
+include:
+  - src/
+  - lib/
+  - tests/
+
+exclude:
+  - vendor/
+  - build/
+  - dist/
+

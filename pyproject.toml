@@ -1,0 +1,54 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "code-quality-checker"
+version = "1.0.0"
+description = "Python 代码质量检测工具 - 配置文件驱动，极简接口"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.8"
+authors = [
+    {name = "KaiHong DevOps Team"}
+]
+keywords = ["code-quality", "linting", "static-analysis", "python"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Quality Assurance",
+]
+
+dependencies = [
+    "flake8>=6.0.0",
+    "mccabe>=0.7.0",
+    "flake8-bugbear>=23.0.0",
+    "pylint>=3.0.0",
+    "radon>=6.0.0",
+    "pyyaml>=6.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "black>=23.0.0",
+    "isort>=5.12.0",
+    "mypy>=1.0.0",
+    "pytest>=7.0.0",
+]
+
+[project.scripts]
+cqc = "code_quality_checker.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/kaihong/code-quality-checker"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["code_quality_checker*"]

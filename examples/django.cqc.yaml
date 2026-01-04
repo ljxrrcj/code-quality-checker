@@ -1,0 +1,14 @@
+# .cqc.yaml - Django 项目配置
+
+include:
+  - apps/
+  - core/
+  - api/
+  - utils/
+
+exclude:
+  - "**/migrations/"
+  - static/
+  - templates/
+  - media/
+
