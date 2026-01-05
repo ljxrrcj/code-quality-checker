@@ -13,6 +13,9 @@ cqc /path/to/project
 
 # 批量检测
 cqc -b /path/to/workspace
+
+# 自动修复空白字符问题
+cqc --cb /path/to/project
 ```
 
 ## 📋 命令行参数
@@ -25,6 +28,7 @@ cqc [选项] <路径>
   -c, --config FILE   指定配置文件路径 (默认: 项目目录下的 .cqc.yaml)
   -o, --output DIR    输出目录 (默认: reports)
   -q, --quiet         静默模式
+  --cb, --clean-blank 自动清理空白字符问题 (W293, W391, W291)
   -v, --version       显示版本
 
 示例:
@@ -32,6 +36,7 @@ cqc [选项] <路径>
   cqc -o reports /path/to/project     指定输出目录
   cqc -c my.yaml /path/to/project     使用指定配置文件
   cqc -b /path/to/workspace           批量检测工作区
+  cqc --cb /path/to/project           自动修复空白字符问题
 ```
 
 ## 📝 配置文件
@@ -110,19 +115,48 @@ reports/
 └── SUMMARY.md               # 批量汇总报告
 ```
 
+## 🧹 自动修复功能
+
+`--cb` (clean blank) 选项可以自动修复以下空白字符问题：
+
+- **W293**: 空行包含空白字符
+- **W391**: 文件末尾多余的空行
+- **W291**: 行尾空白字符
+
+```bash
+# 修复单个文件
+cqc --cb /path/to/file.py
+
+# 修复整个项目
+cqc --cb /path/to/project
+
+# 静默模式修复
+cqc --cb -q /path/to/project
+```
+
+**修复内容**：
+- 清理空行中的空白字符
+- 删除行尾的空白字符
+- 确保文件以单个换行符结束
+
 ## 🔧 Python API
 
 ```python
 from code_quality_checker import Orchestrator
+from code_quality_checker.cleaners import WhitespaceCleaner
 
+# 代码质量检测
 orchestrator = Orchestrator(output_dir='reports')
-
-# 检测单个项目
 result = orchestrator.check('/path/to/project')
 print(f"Issues: {result.flake8_issues}")
 
 # 批量检测
 results = orchestrator.batch_check('/path/to/workspace')
+
+# 空白字符清理
+cleaner = WhitespaceCleaner(verbose=True)
+cleaner.clean_directory('/path/to/project')
+print(cleaner.get_summary())
 ```
 
 ## 📄 License

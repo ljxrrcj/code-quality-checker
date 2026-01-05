@@ -13,6 +13,7 @@ from typing import Optional
 from . import __version__
 from .checker import Orchestrator
 from .checker.config import CheckerConfig, DEFAULT_EXCLUDE
+from .cleaners import WhitespaceCleaner
 from .utils import Colors
 
 
@@ -26,6 +27,10 @@ def main() -> int:
     path = _validate_path(args.path)
     if path is None:
         return 1
+
+    # cb (clean blank) 模式：清理空白字符
+    if args.clean_blank:
+        return _run_clean_blank(path, args)
 
     config = _load_config(args.config)
     if config is False:  # 配置加载失败
@@ -46,6 +51,7 @@ def _parse_args():
   cqc -o reports /path/to/project     指定输出目录
   cqc -c my.yaml /path/to/project     指定配置文件
   cqc -b /path/to/workspace           批量检测
+  cqc --cb /path/to/project           清理空白字符问题
         """
     )
 
@@ -57,6 +63,9 @@ def _parse_args():
                         help='输出目录 (默认: reports)')
     parser.add_argument('-q', '--quiet', action='store_true',
                         help='静默模式')
+    parser.add_argument('--cb', '--clean-blank', dest='clean_blank',
+                        action='store_true',
+                        help='清理空白字符问题 (W293, W391, W291)')
     parser.add_argument('-v', '--version', action='version',
                         version=f'%(prog)s {__version__}')
     parser.add_argument('path', nargs='?',
@@ -132,6 +141,40 @@ def _run(path: Path, config: Optional[CheckerConfig], args) -> int:
 
     result = orchestrator.check(path, config=config, verbose=verbose)
     return 0 if result.success else 1
+
+
+def _run_clean_blank(path: Path, args) -> int:
+    """执行空白字符清理"""
+    verbose = not args.quiet
+
+    if verbose:
+        print(f"{Colors.BLUE}🧹 开始清理空白字符...{Colors.NC}\n")
+
+    try:
+        cleaner = WhitespaceCleaner(verbose=verbose)
+
+        if path.is_file():
+            result = cleaner.clean_file(path)
+            if verbose:
+                print(f"{result.message}: {result.filepath}")
+            success = result.modified
+        else:
+            cleaner.clean_directory(path, pattern="*.py", recursive=True)
+            if verbose:
+                print(f"\n{cleaner.get_summary()}")
+            success = cleaner.fixed_count > 0
+
+        if verbose:
+            if success:
+                print(f"\n{Colors.GREEN}✓ 清理完成！{Colors.NC}")
+            else:
+                print(f"\n{Colors.YELLOW}○ 没有需要修复的文件{Colors.NC}")
+
+        return 0
+
+    except Exception as e:
+        print(f"{Colors.RED}错误: {e}{Colors.NC}")
+        return 1
 
 
 if __name__ == "__main__":
