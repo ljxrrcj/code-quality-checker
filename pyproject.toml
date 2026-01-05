@@ -1,6 +1,6 @@
 [build-system]
-requires = ["setuptools>=61.0", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [project]
 name = "code-quality-checker"
@@ -49,6 +49,5 @@ cqc = "code_quality_checker.cli:main"
 [project.urls]
 Homepage = "https://github.com/kaihong/code-quality-checker"
 
-[tool.setuptools.packages.find]
-where = ["."]
-include = ["code_quality_checker*"]
+[tool.hatch.build.targets.wheel]
+packages = ["code_quality_checker"]
